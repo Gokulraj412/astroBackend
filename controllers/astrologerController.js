@@ -1,106 +1,119 @@
-const catchAsyncError = require('../middlewares/catchAsyncError')
-const Astrologer = require('../models/astrologerModel');
-
+const { Long } = require("mongodb");
+const catchAsyncError = require("../middlewares/catchAsyncError");
+const Astrologer = require("../models/astrologerModel");
 
 //registerAstrologer - {{base_url}}/api/v1/astrologer/register
-exports.registerAstrologer = catchAsyncError(async(req,res,next)=>{
-    const{
-        name,
-        dateOfBirth,
-        email,
-        mobilePrimery,
-        mobileSecondry,
-        address,
-        gender,
-        education,
-        experience,
-        course,
-        instituteAndTeacher,
-        certificates,
-        aboutAstro,
-        aboutExp,
-        knowAboutAstro,
-        workingHours
-    } = req.body
-   
-    let BASE_URL = process.env.BACKEND_URL
-    if(process.env.NODE_ENV === 'production'){
-        BASE_URL = `${req.protocol}://${req.get('host')}`
-    }
-//     let files = [] 
-  
-//     if(req.files.length > 0) {
-//         req.files.forEach( file => {
-//             let url = `${BASE_URL}/uploads/astrologer/${file.originalname}`;
-//             files.push({ doc: url })
-           
-           
-//         })
-//     }
-//    req.body.certificates = files;
-    const astrologer = await Astrologer.create({
-        name,
-        dateOfBirth,
-        email,
-        mobilePrimery,
-        mobileSecondry,
-        address,
-        gender,
-        education,
-        experience,
-        course,
-        instituteAndTeacher,
-        certificates,
-        aboutAstro,
-        aboutExp,
-        knowAboutAstro,
-        workingHours
+exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
+  let fileUrls = [];
+  let BASE_URL = process.env.BACKEND_URL;
+  if (process.env.NODE_ENV === "production") {
+    BASE_URL = `${req.protocol}://${req.get("host")}`;
+  }
+
+  if (req.files && req.files.length > 0) {
+    req.files.forEach((file) => {
+      let astrologerUrl = `${BASE_URL}/uploads/astrologer/${file.originalname}`;
+      // let imagesUrl = `${BASE_URL}/uploads/images/${file.originalname}`;
+
+      fileUrls.push({ file: astrologerUrl });
     });
+  }
+
+  req.body.files = fileUrls;
+  // req.body.profilePic = fileUrls;
+  const astrologer = await Astrologer.create(req.body);
 
   res.status(201).json({
     success: true,
-    astrologer
-})
-
-    
-})
+    astrologer,
+  });
+});
 
 //updateAstrologer - {{base_url}}/api/v1/astrologer/update/:id
-exports.updateAstrologer = catchAsyncError(async(req,res,next)=>{
-    const newUserData = {
-      name:req.body.name,
-      email: req.body.email,
-     
-    }
-     const astrologer = await Astrologer.findByIdAndUpdate(req.params.id,newUserData,{
-      new:true,
+exports.updateAstrologer = catchAsyncError(async (req, res, next) => {
+  const newUserData = ({
+    name,
+    dateOfBirth,
+    email,
+    mobilePrimery,
+    mobileSecondry,
+    address,
+    gender,
+    education,
+    experience,
+    course,
+    instituteAndTeacher,
+    files,
+    aboutAstro,
+    aboutExp,
+    knowAboutAstro,
+    workingHours,
+    isActive,
+  } = req.body);
+  const astrologer = await Astrologer.findByIdAndUpdate(
+    req.params.id,
+    newUserData,
+    {
+      new: true,
       runValidators: true,
-    })
-  
-    res.status(200).json({
-      success:true,
-      astrologer
-     }) 
-  })
+    }
+  );
 
-  //getAllAstrologer - {{base_url}}/api/v1/astrologer//allAstrologers
-exports.getAllAstrologers = catchAsyncError(async(req,res,next)=>{
-    const astrologers = await Astrologer.find();
-    res.status(200).json({
-      success:true,
-      astrologers
-     }) 
-  })
+  res.status(200).json({
+    success: true,
+    astrologer,
+  });
+});
 
 //deleteAstrologer - {{base_url}}/api/v1/astrologer/delete/:id
-  exports.deleteAstrologer = catchAsyncError(async (req, res, next) => {
-    const astrologer = await Astrologer.findById(req.params.id);
-    if(!astrologer) {
-        return next(new ErrorHandler(`User not found with this id ${req.params.id}`))
+exports.deleteAstrologer = catchAsyncError(async (req, res, next) => {
+  const astrologer = await Astrologer.findById(req.params.id);
+  if (!astrologer) {
+    return next(
+      new ErrorHandler(`User not found with this id ${req.params.id}`)
+    );
+  }
+  await astrologer.deleteOne();
+  res.status(200).json({
+    success: true,
+  });
+});
+
+
+//getAllAstrologer - {{base_url}}/api/v1/astrologer/allAstrologers
+exports.getAllAstrologers = catchAsyncError(async (req, res, next) => {
+  const astrologers = await Astrologer.find();
+  res.status(200).json({
+    success: true,
+    astrologers,
+  });
+});
+
+//getAstrologer - {{base_url}}/api/v1/astrologer/getAstrologer/:id
+exports.getAstrologer = catchAsyncError(async (req, res, next) => {
+  const astrologer = await Astrologer.findById(req.params.id);
+   res.status(200).json({
+    success: true,
+    astrologer,
+  });
+});
+
+//changeAstrologer Active to inActive  - {{base_url}}/api/v1/astrologer/state/:id
+exports.activeAstrologer = catchAsyncError(async (req, res, next) => {
+  const newState = ({ isActive } = req.body);
+  const activeAstrologer = await Astrologer.findByIdAndUpdate(
+    req.params.id,
+    newState,
+    {
+      new: true,
+      runValidators: true,
     }
-    await astrologer.deleteOne();
-    res.status(200).json({
-        success: true,
-    })
-  })
-  
+  );
+  res.status(200).json({
+    success: true,
+    activeAstrologer,
+  });
+});
+
+
+

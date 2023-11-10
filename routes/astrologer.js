@@ -1,19 +1,51 @@
-const express = require('express')
-const {registerAstrologer, getAllAstrologers, deleteAstrologer, updateAstrologer} = require('../controllers/astrologerController')
-const multer = require('multer')
+const express = require("express");
+const {
+  registerAstrologer,
+  getAllAstrologers,
+  deleteAstrologer,
+  updateAstrologer,
+  activeAstrologer,
+  getAstrologer 
+} = require("../controllers/astrologerController");
+const multer = require("multer");
 const router = express.Router();
+const path = require("path");
+// const upload = multer({
+//     storage: multer.diskStorage({
+//       destination: function (req, file, cb) {
+//         // You can choose the destination based on the file type or other conditions
+//         if (file.fieldname === 'files') {
+//           cb(null, path.join(__dirname, '..', 'uploads/astrologer'));
+//         } else if (file.fieldname === 'profilePic') {
+//           cb(null, path.join(__dirname, '..', 'uploads/images'));
+//         } else {
+//           cb(new Error('Invalid fieldname for destination'));
+//         }
+//       },
+//       filename: function (req, file, cb) {
+//         cb(null, file.originalname);
+//       },
+//     }),
+//   });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      // You can choose the destination based on the file type or other conditions
 
-const upload = multer({storage:multer.diskStorage({
-    desitination:function(req,file,cb){
-        cb(null, path.join(__dirname,'..','uploads/astrologer'))
+      cb(null, path.join(__dirname, "..", "uploads/astrologer"));
     },
-    filename:function(req,file,cb){
-        cb(null,file.originalname)
-    }
-})})
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
+});
 
-router.route('/astrologer/register').post(registerAstrologer)
-router.route('/astrologer/allAstrologers').get(getAllAstrologers)
-router.route('/astrologer/delete/:id').delete(deleteAstrologer)
-router.route('/astrologer/update/:id').patch(updateAstrologer)
+router
+  .route("/astrologer/register")
+  .post(upload.array("files"), registerAstrologer);
+router.route("/astrologer/allAstrologers").get(getAllAstrologers);
+router.route("/astrologer/getAstrologer/:id").get(getAstrologer );
+router.route("/astrologer/delete/:id").delete(deleteAstrologer);
+router.route("/astrologer/update/:id").put(updateAstrologer);
+router.route("/astrologer/state/:id").put(activeAstrologer);
 module.exports = router;

@@ -20,6 +20,7 @@ const astrologerSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter mobile-no"],
     unique: true,
+    
   },
   mobileSecondry: {
     type: String,
@@ -51,7 +52,21 @@ const astrologerSchema = new mongoose.Schema({
     type: String,
     // required:[true,'Please enter Institute']
   },
-
+files:[
+  {
+    file:{
+      type:String,
+      require:true
+    }
+  }
+],
+profilePic:[
+  {
+    pic:{
+      type:String
+    }
+  }
+],
   aboutAstro: {
     type: String,
     maxlength:[50,'should be maximum 50 characters'],
@@ -69,12 +84,17 @@ const astrologerSchema = new mongoose.Schema({
   },
   workingHours: {
     type: String,
-    // required:[true,' Please Enter Education']
+     required:[true,' Please Enter Education']
+  },
+  isActive: {
+    type: Boolean,
+    
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
 });
 let Astrologer = mongoose.model("Astrologer", astrologerSchema);
 

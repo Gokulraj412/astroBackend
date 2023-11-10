@@ -4,7 +4,6 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const dotenv =require('dotenv')
 const path = require('path')
-const errorMiddleware = require('./middlewares/error')
 
 dotenv.config({path:path.join(__dirname,"config/config.env")})
 
@@ -20,5 +19,5 @@ app.use('/api/v1',user)
 app.use('/api/v1',astrologer)
 app.use('/api/v1',admin);
 
-app.use(errorMiddleware);
+
 module.exports = app
