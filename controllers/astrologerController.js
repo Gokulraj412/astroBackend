@@ -10,17 +10,12 @@ exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
     BASE_URL = `${req.protocol}://${req.get("host")}`;
   }
 
-  if (req.files && req.files.length > 0) {
-    req.files.forEach((file) => {
-      let astrologerUrl = `${BASE_URL}/uploads/astrologer/${file.originalname}`;
-      // let imagesUrl = `${BASE_URL}/uploads/images/${file.originalname}`;
-
-      fileUrls.push({ file: astrologerUrl });
-    });
-  }
+  let astrologerUrl = `${BASE_URL}/uploads/astrologer/${req.files.files[0].originalname}`;
+  let imagesUrl = `${BASE_URL}/uploads/images/${req.files.profilePic[0].originalname}`;
+  fileUrls.push({ file: astrologerUrl, pic: imagesUrl });
 
   req.body.files = fileUrls;
-  // req.body.profilePic = fileUrls;
+  req.body.profilePic = fileUrls;
   const astrologer = await Astrologer.create(req.body);
 
   res.status(201).json({
@@ -79,7 +74,6 @@ exports.deleteAstrologer = catchAsyncError(async (req, res, next) => {
   });
 });
 
-
 //getAllAstrologer - {{base_url}}/api/v1/astrologer/allAstrologers
 exports.getAllAstrologers = catchAsyncError(async (req, res, next) => {
   const astrologers = await Astrologer.find();
@@ -92,7 +86,7 @@ exports.getAllAstrologers = catchAsyncError(async (req, res, next) => {
 //getAstrologer - {{base_url}}/api/v1/astrologer/getAstrologer/:id
 exports.getAstrologer = catchAsyncError(async (req, res, next) => {
   const astrologer = await Astrologer.findById(req.params.id);
-   res.status(200).json({
+  res.status(200).json({
     success: true,
     astrologer,
   });
@@ -114,6 +108,3 @@ exports.activeAstrologer = catchAsyncError(async (req, res, next) => {
     activeAstrologer,
   });
 });
-
-
-

@@ -5,34 +5,23 @@ const {
   deleteAstrologer,
   updateAstrologer,
   activeAstrologer,
-  getAstrologer 
+  getAstrologer,
 } = require("../controllers/astrologerController");
 const multer = require("multer");
 const router = express.Router();
 const path = require("path");
-// const upload = multer({
-//     storage: multer.diskStorage({
-//       destination: function (req, file, cb) {
-//         // You can choose the destination based on the file type or other conditions
-//         if (file.fieldname === 'files') {
-//           cb(null, path.join(__dirname, '..', 'uploads/astrologer'));
-//         } else if (file.fieldname === 'profilePic') {
-//           cb(null, path.join(__dirname, '..', 'uploads/images'));
-//         } else {
-//           cb(new Error('Invalid fieldname for destination'));
-//         }
-//       },
-//       filename: function (req, file, cb) {
-//         cb(null, file.originalname);
-//       },
-//     }),
-//   });
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
       // You can choose the destination based on the file type or other conditions
-
-      cb(null, path.join(__dirname, "..", "uploads/astrologer"));
+      if (file.fieldname === "files") {
+        cb(null, path.join(__dirname, "..", "uploads/astrologer"));
+      } else if (file.fieldname === "profilePic") {
+        cb(null, path.join(__dirname, "../", "uploads/images"));
+      } else {
+        cb(new Error("Invalid fieldname for destination"));
+      }
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname);
@@ -40,11 +29,13 @@ const upload = multer({
   }),
 });
 
-router
-  .route("/astrologer/register")
-  .post(upload.array("files"), registerAstrologer);
+router.route("/astrologer/register").post(
+  upload.fields([{ name: "files" }, { name: "profilePic" }]),
+
+  registerAstrologer
+);
 router.route("/astrologer/allAstrologers").get(getAllAstrologers);
-router.route("/astrologer/getAstrologer/:id").get(getAstrologer );
+router.route("/astrologer/getAstrologer/:id").get(getAstrologer);
 router.route("/astrologer/delete/:id").delete(deleteAstrologer);
 router.route("/astrologer/update/:id").put(updateAstrologer);
 router.route("/astrologer/state/:id").put(activeAstrologer);

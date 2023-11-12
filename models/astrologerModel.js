@@ -63,7 +63,8 @@ files:[
 profilePic:[
   {
     pic:{
-      type:String
+      type:String,
+  
     }
   }
 ],
