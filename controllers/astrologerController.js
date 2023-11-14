@@ -1,4 +1,4 @@
-const { Long } = require("mongodb");
+const ErrorHandler = require('../utils/errorHandler')
 const catchAsyncError = require("../middlewares/catchAsyncError");
 const Astrologer = require("../models/astrologerModel");
 
@@ -9,26 +9,32 @@ exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
   if (process.env.NODE_ENV === "production") {
     BASE_URL = `${req.protocol}://${req.get("host")}`;
   }
+  try{
 
-  let certificateUrls = []
-  req.files.files.forEach(element => {
-    let astrologerUrl = `${BASE_URL}/uploads/astrologer/${element.originalname}`;
-    certificateUrls.push({ file: astrologerUrl });
+    let certificateUrls = []
+    req.files.files.forEach(element => {
+      let astrologerUrl = `${BASE_URL}/uploads/astrologer/${element.originalname}`;
+      certificateUrls.push({ file: astrologerUrl });
+  
+    });
+  
+    let picUrls = [];
+    let imagesUrl = `${BASE_URL}/uploads/images/${req.files.profilePic[0].originalname}`;
+    picUrls.push({ pic: imagesUrl });
+  
+    req.body.files = certificateUrls;
+    req.body.profilePic = picUrls;
+    const astrologer = await Astrologer.create(req.body);
+  
+    res.status(201).json({
+      success: true,
+      astrologer,
+    });
+  }
+  catch(error){
+    return next(new ErrorHandler(error.message), 500)
+  }
 
-  });
-
-  let picUrls = [];
-  let imagesUrl = `${BASE_URL}/uploads/images/${req.files.profilePic[0].originalname}`;
-  fileUrls.push({ pic: imagesUrl });
-
-  req.body.files = certificateUrls;
-  req.body.profilePic = picUrls;
-  const astrologer = await Astrologer.create(req.body);
-
-  res.status(201).json({
-    success: true,
-    astrologer,
-  });
 });
 
 //updateAstrologer - {{base_url}}/api/v1/astrologer/update/:id
@@ -83,16 +89,27 @@ exports.deleteAstrologer = catchAsyncError(async (req, res, next) => {
 
 //getAllAstrologer - {{base_url}}/api/v1/astrologer/allAstrologers
 exports.getAllAstrologers = catchAsyncError(async (req, res, next) => {
-  const astrologers = await Astrologer.find();
-  res.status(200).json({
-    success: true,
-    astrologers,
-  });
+  try{
+    const astrologers = await Astrologer.find();
+    res.status(200).json({
+      success: true,
+      astrologers,
+    });
+  }
+  catch(error){
+    return next(new ErrorHandler(error.message), 500)
+  }
+ 
 });
 
 //getAstrologer - {{base_url}}/api/v1/astrologer/getAstrologer/:id
 exports.getAstrologer = catchAsyncError(async (req, res, next) => {
   const astrologer = await Astrologer.findById(req.params.id);
+  if (!astrologer) {
+    return next(
+      new ErrorHandler(`User not found with this id ${req.params.id}`)
+    );
+  }
   res.status(200).json({
     success: true,
     astrologer,
