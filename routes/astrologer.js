@@ -29,6 +29,7 @@ const upload = multer({
   }),
 });
 
+
 router.route("/astrologer/register").post(
   upload.fields([{ name: "files" }, { name: "profilePic" }]),
 

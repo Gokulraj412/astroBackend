@@ -4,18 +4,25 @@ const Astrologer = require("../models/astrologerModel");
 
 //registerAstrologer - {{base_url}}/api/v1/astrologer/register
 exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
-  let fileUrls = [];
+
   let BASE_URL = process.env.BACKEND_URL;
   if (process.env.NODE_ENV === "production") {
     BASE_URL = `${req.protocol}://${req.get("host")}`;
   }
 
-  let astrologerUrl = `${BASE_URL}/uploads/astrologer/${req.files.files[0].originalname}`;
-  let imagesUrl = `${BASE_URL}/uploads/images/${req.files.profilePic[0].originalname}`;
-  fileUrls.push({ file: astrologerUrl, pic: imagesUrl });
+  let certificateUrls = []
+  req.files.files.forEach(element => {
+    let astrologerUrl = `${BASE_URL}/uploads/astrologer/${element.originalname}`;
+    certificateUrls.push({ file: astrologerUrl });
 
-  req.body.files = fileUrls;
-  req.body.profilePic = fileUrls;
+  });
+
+  let picUrls = [];
+  let imagesUrl = `${BASE_URL}/uploads/images/${req.files.profilePic[0].originalname}`;
+  fileUrls.push({ pic: imagesUrl });
+
+  req.body.files = certificateUrls;
+  req.body.profilePic = picUrls;
   const astrologer = await Astrologer.create(req.body);
 
   res.status(201).json({
