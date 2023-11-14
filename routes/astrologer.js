@@ -5,33 +5,65 @@ const {
   deleteAstrologer,
   updateAstrologer,
   activeAstrologer,
-  getAstrologer,
+  getAstrologer
 } = require("../controllers/astrologerController");
 const multer = require("multer");
 const router = express.Router();
 const path = require("path");
+// const upload = multer({
+//     storage: multer.diskStorage({
+//       destination: function (req, file, cb) {
+//         // You can choose the destination based on the file type or other conditions
+//         if (file.fieldname === 'files') {
+//           cb(null, path.join(__dirname, '..', 'uploads/astrologer'));
+//         } else if (file.fieldname === 'profilePic') {
+//           cb(null, path.join(__dirname, '..', 'uploads/images'));
+//         } else {
+//           cb(new Error('Invalid fieldname for destination'));
+//         }
+//       },
+//       filename: function (req, file, cb) {
+//         cb(null, file.originalname);
+//       },
+//     }),
+//   });
+// const upload = multer({
+//   storage: multer.diskStorage({
+//     destination: function (req, file, cb) {
+//       // You can choose the destination based on the file type or other conditions
+//       cb(null, path.join(__dirname, "..", "uploads/certificates"));
+//     },
+//     filename: function (req, file, cb) {
+//       cb(null, Date.now() + '-' + file.originalname);
+//     },
+//   }),
+// });
+
+// router
+//   .route("/astrologer/register")
+//   .post(upload.array("certificates"), registerAstrologer);
+
 
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
       // You can choose the destination based on the file type or other conditions
-      if (file.fieldname === "files") {
-        cb(null, path.join(__dirname, "..", "uploads/astrologer"));
+      if (file.fieldname === "certificates") {
+        cb(null, path.join(__dirname, "..", "uploads/certificates"));
       } else if (file.fieldname === "profilePic") {
-        cb(null, path.join(__dirname, "../", "uploads/images"));
+        cb(null, path.join(__dirname, "../", "uploads/profilepic"));
       } else {
         cb(new Error("Invalid fieldname for destination"));
       }
     },
     filename: function (req, file, cb) {
-      cb(null, file.originalname);
+      cb(null, Date.now() + file.originalname);
     },
   }),
 });
 
-
 router.route("/astrologer/register").post(
-  upload.fields([{ name: "files" }, { name: "profilePic" }]),
+  upload.fields([{ name: "certificates" }, { name: "profilePic" }]),
 
   registerAstrologer
 );

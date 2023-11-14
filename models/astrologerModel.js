@@ -1,14 +1,24 @@
 const mongoose = require("mongoose");
 const validator = require('validator');
+// const {nanoid} = require("nanoid")
 
 const astrologerSchema = new mongoose.Schema({
-  name: {
+  astrologerID: {
     type: String,
-    required: [true, "Please enter name"],
+    required: true,
+    default: () => nanoid(6),
+    index: { unique: true },
   },
-  dateOfBirth: {
+  firstname: {
     type: String,
-    required: [true, "Please enter Date of birth"],
+    required: [true, "Please enter firstname"],
+  },
+  lastname: {
+    type: String,
+    required: [true, "Please enter lastname"],
+  },
+  dob: {
+    type: String,
   },
   email: {
     type: String,
@@ -16,28 +26,38 @@ const astrologerSchema = new mongoose.Schema({
     unique: true,
     validate: [validator.isEmail, "Please enter valid email address"],
   },
-  mobilePrimery: {
+  mobilePrimary: {
     type: String,
     required: [true, "Please enter mobile-no"],
     unique: true,
-    
   },
-  mobileSecondry: {
+  mobileSecondary: {
     type: String,
-    required: [true, "Please enter mobile-no"],
     unique: true,
   },
 
   address: {
     type: String,
-    required: true,
+  },
+  district: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  country: {
+    type: String,
+  },
+  pincode: {
+    type: String,
   },
   gender: {
     type: String,
+    required: [true, "Please enter gender"],
+
   },
-  education: {
+  qualifications: {
     type: String,
-    required: [true, " Please Enter Education"],
   },
   experience: {
     type: String,
@@ -46,50 +66,45 @@ const astrologerSchema = new mongoose.Schema({
 
   course: {
     type: String,
-    required: [true, "Please enter Course"],
   },
-  instituteAndTeacher: {
+  institute: {
     type: String,
-    // required:[true,'Please enter Institute']
   },
-files:[
-  {
-    file:{
-      type:String,
-      require:true
+
+  astrologyDescription: {
+    type: String,
+  },
+  astrologyExperience: {
+    type: String,
+  },
+  astrologyExpertise: {
+    type: String,
+  },
+  knowus: {
+    type: String,
+  },
+  maxTime: {
+    type: String,
+  },
+
+  certificates: [
+    {
+      file: {
+        type: String,
+      }
     }
-  }
-],
-profilePic:[
-  {
-    pic:{
-      type:String,
-  
+  ],
+  profilePic: [
+    {
+      pic: {
+        type: String
+      }
     }
-  }
-],
-  aboutAstro: {
-    type: String,
-    maxlength:[50,'should be maximum 50 characters'],
-    // required:true
-  },
-  aboutExp: {
-    type: String,
-    maxlength:[50,'should be maximum 50 characters'],
-    
-    // required:true
-  },
-  knowAboutAstro: {
-    type: String,
-    // required:true
-  },
-  workingHours: {
-    type: String,
-     required:[true,' Please Enter Education']
-  },
+  ],
+
   isActive: {
     type: Boolean,
-    
+
   },
   createdAt: {
     type: Date,
