@@ -9,6 +9,8 @@ exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
   if (process.env.NODE_ENV === "production") {
     BASE_URL = `${req.protocol}://${req.get("host")}`;
   }
+
+
   try{
 
     let certificateUrls = []
@@ -22,7 +24,7 @@ exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
     let imagesUrl = `${BASE_URL}/uploads/profilepic/${req.files.profilePic[0].originalname}`;
     picUrls.push({ pic: imagesUrl });
   
-    req.body.files = certificateUrls;
+    req.body.certificates = certificateUrls;
     req.body.profilePic = picUrls;
     const astrologer = await Astrologer.create(req.body);
   
@@ -40,22 +42,24 @@ exports.registerAstrologer = catchAsyncError(async (req, res, next) => {
 //updateAstrologer - {{base_url}}/api/v1/astrologer/update/:id
 exports.updateAstrologer = catchAsyncError(async (req, res, next) => {
   const newUserData = ({
-    name,
-    dateOfBirth,
+    firstname,
+    lastname,
+    dob,
     email,
     mobilePrimery,
     mobileSecondry,
     address,
     gender,
-    education,
+    qualifications,
     experience,
     course,
-    instituteAndTeacher,
-    files,
-    aboutAstro,
-    aboutExp,
-    knowAboutAstro,
-    workingHours,
+    institute,
+    certificates,
+    astrologyDescription,
+    astrologyExperience,
+    astrologyExpertise,
+    knowus,
+    maxTime,
     isActive,
   } = req.body);
   const astrologer = await Astrologer.findByIdAndUpdate(
