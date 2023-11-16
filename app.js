@@ -10,7 +10,10 @@ dotenv.config({path:path.join(__dirname,"config/config.env")})
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}))
-
+app.use((req,res,next)=>{
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next()
+})
 const user = require('./routes/User')
 const astrologer = require('./routes/astrologer')
 const admin = require('./routes/Admin')
