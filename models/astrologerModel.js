@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
 const validator = require('validator');
-//  const {nanoid} = require("nanoid")
 
 const astrologerSchema = new mongoose.Schema({
-  // astrologerID: {
-  //   type: String,
-  //   required: true,
-  //   default: () => nanoid(6),
-  //   index: { unique: true },
-  // },
+  astrologerID: {
+    type: String,
+    required: true,
+    index: { unique: true },
+    unique: true,
+  },
   firstname: {
     type: String,
     required: [true, "Please enter firstname"],
@@ -26,16 +25,14 @@ const astrologerSchema = new mongoose.Schema({
     unique: true,
     validate: [validator.isEmail, "Please enter valid email address"],
   },
-  mobilePrimery: {
+  mobilePrimary: {
     type: String,
     required: [true, "Please enter mobile-no"],
     unique: true,
   },
-  mobileSecondry: {
+  mobileSecondary: {
     type: String,
-    unique: true,
   },
-
   address: {
     type: String,
   },
@@ -60,8 +57,7 @@ const astrologerSchema = new mongoose.Schema({
     type: String,
   },
   experience: {
-    type: String,
-    required: [true, " Please Enter year of experience"],
+    type: String,    
   },
 
   course: {
@@ -104,7 +100,7 @@ const astrologerSchema = new mongoose.Schema({
 
   isActive: {
     type: Boolean,
-
+    default: true
   },
   createdAt: {
     type: Date,
